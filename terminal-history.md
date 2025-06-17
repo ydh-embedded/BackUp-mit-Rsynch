@@ -150,6 +150,84 @@ Found memtest86+ EFI image: /boot/memtest86+/memtest.efi
 abgeschlossen
 
 
+[y@y-L10111 ~]$ # EFI-Partition Inhalt prüfen
+ls -la /mnt/restore/boot/efi/EFI/
+ls -la /mnt/restore/boot/efi/EFI/Manjaro/
+ls: Zugriff auf '/mnt/restore/boot/efi/EFI/' nicht möglich: Datei oder Verzeichnis nicht gefunden
+ls: Zugriff auf '/mnt/restore/boot/efi/EFI/Manjaro/' nicht möglich: Datei oder Verzeichnis nicht gefunden
+[y@y-L10111 ~]$ # Mount-Status
+mount | grep -E "(sdb1|sdb2)"
+
+# Alle wichtigen Dateien prüfen
+ls -la /mnt/restore/boot/efi/EFI/Manjaro/grubx64.efi
+ls -la /mnt/restore/boot/grub/grub.cfg
+ls -la /mnt/restore/etc/fstab
+ls: Zugriff auf '/mnt/restore/boot/efi/EFI/Manjaro/grubx64.efi' nicht möglich: Datei oder Verzeichnis nicht gefunden
+ls: Zugriff auf '/mnt/restore/boot/grub/grub.cfg' nicht möglich: Datei oder Verzeichnis nicht gefunden
+ls: Zugriff auf '/mnt/restore/etc/fstab' nicht möglich: Datei oder Verzeichnis nicht gefunden
+[y@y-L10111 ~]$ # Root-Partition mounten
+sudo mkdir -p /mnt/restore
+sudo mount /dev/sdb2 /mnt/restore
+
+# EFI-Partition mounten
+sudo mkdir -p /mnt/restore/boot/efi
+sudo mount /dev/sdb1 /mnt/restore/boot/efi
+[sudo] Passwort für y: 
+[y@y-L10111 ~]$ # Prüfen ob alles richtig gemountet ist
+mount | grep sdb
+df -h | grep sdb
+/dev/sdb2 on /mnt/restore type ext4 (rw,relatime)
+/dev/sdb1 on /mnt/restore/boot/efi type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro)
+/dev/sdb2       916G     34G  836G    4% /mnt/restore
+/dev/sdb1       499M     47M  453M   10% /mnt/restore/boot/efi
+[y@y-L10111 ~]$ # EFI-Bootloader-Eintrag prüfen
+sudo efibootmgr -v
+
+# EFI-Dateien überprüfen
+ls -la /mnt/restore/boot/efi/EFI/
+ls -la /mnt/restore/boot/efi/EFI/Manjaro/
+
+# GRUB-Konfiguration prüfen
+ls -la /mnt/restore/boot/grub/grub.cfg
+head -20 /mnt/restore/boot/grub/grub.cfg
+
+# fstab prüfen
+cat /mnt/restore/etc/fstab
+BootCurrent: 0001
+Timeout: 0 seconds
+BootOrder: 0001,0002,0000
+Boot0000* Windows Boot Manager	HD(1,GPT,e6636574-fe1d-4c7c-b470-de6cf5fb64de,0x800,0x82000)/\EFI\MICROSOFT\BOOT\BOOTMGFW.EFI57494e444f5753000100000088000000780000004200430044004f0042004a004500430054003d007b00390064006500610038003600320063002d0035006300640064002d0034006500370030002d0061006300630031002d006600330032006200330034003400640034003700390035007d0000006ad00100000010000000040000007fff0400
+      dp: 04 01 2a 00 01 00 00 00 00 08 00 00 00 00 00 00 00 20 08 00 00 00 00 00 74 65 63 e6 1d fe 7c 4c b4 70 de 6c f5 fb 64 de 02 02 / 04 04 46 00 5c 00 45 00 46 00 49 00 5c 00 4d 00 49 00 43 00 52 00 4f 00 53 00 4f 00 46 00 54 00 5c 00 42 00 4f 00 4f 00 54 00 5c 00 42 00 4f 00 4f 00 54 00 4d 00 47 00 46 00 57 00 2e 00 45 00 46 00 49 00 00 00 / 7f ff 04 00
+    data: 57 49 4e 44 4f 57 53 00 01 00 00 00 88 00 00 00 78 00 00 00 42 00 43 00 44 00 4f 00 42 00 4a 00 45 00 43 00 54 00 3d 00 7b 00 39 00 64 00 65 00 61 00 38 00 36 00 32 00 63 00 2d 00 35 00 63 00 64 00 64 00 2d 00 34 00 65 00 37 00 30 00 2d 00 61 00 63 00 63 00 31 00 2d 00 66 00 33 00 32 00 62 00 33 00 34 00 34 00 64 00 34 00 37 00 39 00 35 00 7d 00 00 00 6a d0 01 00 00 00 10 00 00 00 04 00 00 00 7f ff 04 00
+Boot0001* Manjaro	HD(1,GPT,d0982f27-4833-44e1-9986-18f212f9248a,0x800,0xfa000)/\EFI\Manjaro\grubx64.efi
+      dp: 04 01 2a 00 01 00 00 00 00 08 00 00 00 00 00 00 00 a0 0f 00 00 00 00 00 27 2f 98 d0 33 48 e1 44 99 86 18 f2 12 f9 24 8a 02 02 / 04 04 36 00 5c 00 45 00 46 00 49 00 5c 00 4d 00 61 00 6e 00 6a 00 61 00 72 00 6f 00 5c 00 67 00 72 00 75 00 62 00 78 00 36 00 34 00 2e 00 65 00 66 00 69 00 00 00 / 7f ff 04 00
+Boot0002* endeavouros	HD(1,GPT,e6636574-fe1d-4c7c-b470-de6cf5fb64de,0x800,0x82000)/\EFI\ENDEAVOUROS\GRUBX64.EFI
+      dp: 04 01 2a 00 01 00 00 00 00 08 00 00 00 00 00 00 00 20 08 00 00 00 00 00 74 65 63 e6 1d fe 7c 4c b4 70 de 6c f5 fb 64 de 02 02 / 04 04 3e 00 5c 00 45 00 46 00 49 00 5c 00 45 00 4e 00 44 00 45 00 41 00 56 00 4f 00 55 00 52 00 4f 00 53 00 5c 00 47 00 52 00 55 00 42 00 58 00 36 00 34 00 2e 00 45 00 46 00 49 00 00 00 / 7f ff 04 00
+insgesamt 24
+drwxr-xr-x 6 root root 4096 30. Okt 2024  .
+drwxr-xr-x 5 root root 4096  1. Jan 1970  ..
+drwxr-xr-x 2 root root 4096  1. Sep 2021  Boot
+drwxr-xr-x 2 root root 4096 21. Apr 2024  endeavouros
+drwxr-xr-x 2 root root 4096 30. Okt 2024  Manjaro
+drwxr-xr-x 4 root root 4096  1. Sep 2021  Microsoft
+insgesamt 160
+drwxr-xr-x 2 root root   4096 30. Okt 2024  .
+drwxr-xr-x 6 root root   4096 30. Okt 2024  ..
+-rwxr-xr-x 1 root root 155648 17. Jun 11:39 grubx64.efi
+-rw------- 1 root root 11680 17. Jun 11:33 /mnt/restore/boot/grub/grub.cfg
+head: '/mnt/restore/boot/grub/grub.cfg' kann nicht zum Lesen geöffnet werden: Keine Berechtigung
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a device; this may
+# be used with UUID= as a more robust way to name devices that works even if
+# disks are added and removed. See fstab(5).
+#
+# <file system>             <mount point>  <type>  <options>  <dump>  <pass>
+UUID=C626-A127                            /boot/efi      vfat    defaults,umask=0077 0 2
+UUID=610757af-4666-4500-9ef8-bf76283f8d91 /              ext4    defaults   0 1
+tmpfs                                     /tmp           tmpfs   defaults,noatime,mode=1777 0 0
+[y@y-L10111 ~]$ 
+
 
 
 ```

@@ -129,6 +129,96 @@ sudo umount /mnt/restore/boot/efi
 sudo umount /mnt/restore
 ```
 
+## Check - Grub 
+```
+### a. Partitionen mounten
+```bash
+# Root-Partition mounten
+sudo mkdir -p /mnt/restore
+sudo mount /dev/sdb2 /mnt/restore
+```
+
+# EFI-Partition mounten
+sudo mkdir -p /mnt/restore/boot/efi
+sudo mount /dev/sdb1 /mnt/restore/boot/efi
+### b. Mount-Status überprüfen
+```bash
+# Prüfen ob alles richtig gemountet ist
+mount | grep sdb
+df -h | grep sdb
+```
+### c. Jetzt die Checks durchführen
+```bash
+# EFI-Bootloader-Eintrag prüfen
+sudo efibootmgr -v
+```
+
+```bash
+# EFI-Dateien überprüfen
+ls -la /mnt/restore/boot/efi/EFI/
+ls -la /mnt/restore/boot/efi/EFI/Manjaro/
+```
+```bash
+# GRUB-Konfiguration prüfen
+ls -la /mnt/restore/boot/grub/grub.cfg
+head -20 /mnt/restore/boot/grub/grub.cfg
+```
+
+### d. Nach den Checks wieder unmounten
+```bash
+sudo umount /mnt/restore/boot/efi
+sudo umount /mnt/restore
+```
+✅ GRUB Installation erfolgreich:
+
+EFI-Bootloader-Eintrag "Manjaro" ist vorhanden (Boot0001)
+grubx64.efi existiert in /EFI/Manjaro/
+grub.cfg ist erstellt
+
+```bash
+# fstab prüfen
+cat /mnt/restore/etc/fstab
+```
+❌ Problem: fstab ist veraltet!
+Die fstab zeigt noch die alten UUIDs vom ursprünglichen System. Das muss korrigiert werden:
+1. Aktuelle UUIDs der neuen Festplatte ermitteln
+```bash
+# UUIDs der neuen Partitionen anzeigen
+sudo blkid /dev/sdb1 /dev/sdb2
+```
+2. Neue fstab generieren
+
+```bash
+# Alte fstab als Backup
+sudo cp /mnt/restore/etc/fstab /mnt/restore/etc/fstab.backup
+```
+
+# Neue fstab mit korrekten UUIDs generieren
+```bash
+sudo genfstab -U /mnt/restore > /tmp/new_fstab
+sudo cp /tmp/new_fstab /mnt/restore/etc/fstab
+```
+3. Neue fstab überprüfen
+```bash
+cat /mnt/restore/etc/fstab
+```
+4. GRUB-Config mit neuen UUIDs aktualisieren
+```bash
+# In chroot gehen um GRUB-Config zu erneuern
+sudo                    chroot /mnt/restore
+grub-mkconfig -o /boot/grub/grub.cfg
+exit
+```
+
+Die UUIDs in der fstab müssen zu deinen neuen Partitionen 
+/dev/sdb1 und /dev/sdb2 passen, sonst bootet das System nicht!
+
+Führe zuerst
+```ps
+ sudo blkid /dev/sdb1 /dev/sdb2
+```
+
+
 ## 9. Test
 
 1. Festplatte in Zielrechner einbauen

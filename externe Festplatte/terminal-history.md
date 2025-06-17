@@ -233,7 +233,7 @@ tmpfs                                     /tmp           tmpfs   defaults,noatim
 
 
 
-# fstab BackUp
+## fstab BackUp
 ```bash
 [y@y-L10111 etc]$ sudo cp /etc/fstab.backup /etc/fstab
 

@@ -223,11 +223,24 @@ head: '/mnt/restore/boot/grub/grub.cfg' kann nicht zum Lesen geöffnet werden: K
 # disks are added and removed. See fstab(5).
 #
 # <file system>             <mount point>  <type>  <options>  <dump>  <pass>
-UUID=C626-A127                            /boot/efi      vfat    defaults,umask=0077 0 2
-UUID=610757af-4666-4500-9ef8-bf76283f8d91 /              ext4    defaults   0 1
+UUID=C626-A127xx                            /boot/efi      vfat    defaults,umask=0077 0 2
+UUID=610757af-4666-4500-9ef8-bf76283f8d91xx /              ext4    defaults   0 1
 tmpfs                                     /tmp           tmpfs   defaults,noatime,mode=1777 0 0
 [y@y-L10111 ~]$ 
 
 
+```
+
+
+
+# fstab BackUp
+```bash
+[y@y-L10111 etc]$ sudo cp /etc/fstab.backup /etc/fstab
+
+[y@y-L10111 ~]$ cd ..
+[y@y-L10111 home]$ cd ..
+[y@y-L10111 /]$ cd /etc/
+[y@y-L10111 etc]$ ls -l | grep fstab.backup
+-rw-r--r--  1 root                 root                    594 17. Jun 12:31 fstab.backup
 
 ```

@@ -94,8 +94,21 @@ ls -la /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Manjaro
 grub-mkconfig -o /boot/grub/grub.cfg
 
+
 # Chroot verlassen
 exit
+
+
+# Alle Mounts unmounten
+sudo umount /mnt/restore/dev
+sudo umount /mnt/restore/proc
+sudo umount /mnt/restore/sys
+sudo umount /mnt/restore/boot/efi
+sudo umount /mnt/restore
+
+# Alternativ -> Ohne chroot direkt installieren
+sudo grub-install --target=x86_64-efi --efi-directory=/mnt/restore/boot/efi --bootloader-id=Manjaro --boot-directory=/mnt/restore/boot
+
 ```
 
 ## 7. fstab korrigieren
